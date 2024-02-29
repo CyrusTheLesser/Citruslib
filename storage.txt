@@ -1,0 +1,112 @@
+
+    /*
+    [HarmonyPatch(typeof(UnityTransportServer),nameof(UnityTransportServer.Update))]
+    class BufferedPackagePatch
+    {
+        static bool Prefix(UnityTransportServer __instance, ref Queue<UnityTransportServer.BufferedPackage> ___m_BufferedPackages)
+        {
+           
+        }
+    }*/
+
+
+/*[HarmonyPatch(typeof(UnityTransportServer), "Update")]
+    class UpdatePatch
+    {
+        static void Prefix(ref BidirectionalDictionary<byte,NetworkConnection> ___m_playerIDToConnection, UnityTransportServer __instance, ref NativeList<NetworkConnection> ___m_connections, ref Queue<UnityTransportServer.BufferedPackage> ___m_BufferedPackages)
+        {
+            //apparent naitivelists are special and cannot be compared to null?
+            if (Citrus.kicklist != null & ___m_playerIDToConnection != null)
+            {
+                while (Citrus.kicklist.Count != 0)
+                {
+                    byte pb = Citrus.kicklist.Dequeue();
+                    NetworkConnection nc;
+                    if (!___m_playerIDToConnection.TryGetValue(pb, out nc))
+                    {
+                        Citrus.log.LogError(string.Format("Failed to find connection fo player ID: {0}", pb));
+                        continue;
+                    }
+                    //please work please work please work
+                    int j = ___m_connections.IndexOf(nc);
+                    ___m_playerIDToConnection.Remove(___m_connections[j]);
+                    Citrus.log.Log(string.Format("Client: {0} disconnected from server", ___m_connections[j].InternalId));
+                    ___m_connections[j] = default(NetworkConnection);
+                    TABGPlayerServer tabgplayerServer = Citrus.World.GameRoomReference.FindPlayer(pb);
+                    if (tabgplayerServer != null)
+                    {
+                        Citrus.World.HandlePlayerLeave(tabgplayerServer);
+                    }
+
+                    
+
+                }
+            }
+
+            Citrus.landLogSupressed = true;
+            Citrus.FixQueue(ref ___m_BufferedPackages);
+            int before = Citrus.queue.Count();
+            if (before > 0)
+            {
+                foreach (UnityTransportServer.BufferedPackage p in Citrus.queue)
+                {
+                    Citrus.World.SendMessageToClients(p.EventCode, p.Data, p.RecipentIndicies, true);
+                }
+                int after = Citrus.queue.Count();
+                Citrus.queue = new List<UnityTransportServer.BufferedPackage>();
+                Citrus.FixQueue(ref ___m_BufferedPackages);
+                Citrus.log.Log(string.Format("Sent {0} buffered packages, {1} still remaining",(before - after),after));
+            }
+            Citrus.landLogSupressed = false;
+            UnityTransportServer.BufferedPackage bufferedPackage;
+            if (___m_BufferedPackages != null & ___m_BufferedPackages.Count > 0)
+            {
+
+                //Citrus.World.GameRoomReference.CurrentGameSettings;
+                int i = ___m_BufferedPackages.Count;
+
+                int buff = i;
+
+                while (i > 0)
+                {
+                    i--;
+                    //might work, i've never used queues before
+
+                    bufferedPackage = ___m_BufferedPackages.Peek();
+                    //Citrus.log.Log("Buffer Package type: "+((EventCode)(bufferedPackage.EventCode)).ToString());
+
+                    //Citrus.Network.GetPipelineBuffers(Citrus.Network.pi)
+
+                    
+
+                    List<byte> recip = new List<byte>();
+                    foreach(byte by in bufferedPackage.RecipentIndicies)
+                    {
+                        if (Citrus.World.GameRoomReference.FindPlayer(by) != null)
+                        {
+                            recip.Add(by);
+                        }
+                    }
+                    if (recip.Count != 0)
+                    {
+                        __instance.SendMessageToClients(bufferedPackage.EventCode, bufferedPackage.Data, recip.ToArray(), true, false);
+                    }
+                    
+
+
+                }
+                Citrus.log.Log(string.Format("tried going through {0} packages, there are now {1} remaining in the queue...", buff, ___m_BufferedPackages.Count));
+
+            }
+            
+            //return true;
+
+        }
+
+
+        static void Postfix(ref BidirectionalDictionary<byte, NetworkConnection> ___m_playerIDToConnection, ref NativeList<NetworkConnection> ___m_connections)
+        {
+        }
+    }
+    
+    */
