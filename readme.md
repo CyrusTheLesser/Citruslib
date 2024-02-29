@@ -1,1 +1,3 @@
-A code library for Totally Accurate Battlegrounds Dedicated Server
+A code library for Totally Accurate Battlegrounds Dedicated Server to make modding easier. 
+
+:)
