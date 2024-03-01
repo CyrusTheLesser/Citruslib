@@ -50,7 +50,7 @@ namespace CitrusLib
 
                 PermList defaultPermList = new PermList();
                 defaultPermList.name = "players";
-                    defaultPermList.description = "List of players with modified admin-status or permission level. defafult permission level is 0. some commands can be admin-only, OR require a higher perm level, OR BOTH.";
+                    defaultPermList.description = "List of players with modified permission level. defafult permission level is 0. commands can have different required permission levels, and the PL of players can even be lowered!";
 
                 PermList.PermPlayer dp = new PermList.PermPlayer();
                 dp.epic = "epic goes here";
