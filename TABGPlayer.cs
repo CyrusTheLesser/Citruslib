@@ -16,7 +16,12 @@ namespace CitrusLib
 
 
 
-        
+        /// <summary>
+        /// teleports a living player. if the player is dead, they are respawned.
+        /// </summary>
+        /// <param name="player">The player to teleport</param>
+        /// <param name="pos">the position to teleport the player</param>
+        /// <param name="keepLoot">whether to retain the player's loot or remove it.</param>
         public static void Teleport(TABGPlayerServer player, Vector3 pos, bool keepLoot = true)
         {
             Teleport(player, pos, player.PlayerRotation, keepLoot);
@@ -25,10 +30,10 @@ namespace CitrusLib
         /// <summary>
         /// teleports a living player. if the player is dead, they are respawned.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="pos"></param>
-        /// <param name="rot"></param>
-        /// <param name="keepLoot"></param>
+        /// <param name="player">The player to teleport</param>
+        /// <param name="pos">the position to teleport the player</param>
+        /// <param name="rot">the rotation to have the player face</param>
+        /// <param name="keepLoot">whether to retain the player's loot or remove it.</param>
         public static void Teleport(TABGPlayerServer player, Vector3 pos, Vector2 rot, bool keepLoot = true)
         {
             byte[] array = new byte[(int)(24)];
@@ -94,7 +99,11 @@ namespace CitrusLib
 
         }
 
-        //kills a player and allow choosing who is awarded the kill
+        /// <summary>
+        /// kills a player.
+        /// </summary>
+        /// <param name="player">The player to kill</param>
+        /// <param name="killer">Optional. allows a player to be awarded the kill</param>
         public static void KillPlayer(TABGPlayerServer player, TABGPlayerServer killer = null)
         {
             if (player == null)
@@ -112,15 +121,27 @@ namespace CitrusLib
                 Citrus.World.GameRoomReference.CurrentGameKills.AddKillForTeam(groupIndex);
             }
 
-            //TODO: SEND MESSAGE
+            //TODO: SEND KILL MESSAGE
 
         }
 
+        /// <summary>
+        /// removes a player's loot and gives them items
+        /// </summary>
+        /// <param name="player">The player to affect</param>
+        /// <param name="items">an array of item ids. use the CitrusLib Item!</param>
+        /// <param name="quantities">an array of quantities for each item</param>
         public static void SetLoot(TABGPlayerServer player, int[] items, int[] quantities)
         {
             SetLoot(player, items.ToList(), quantities.ToList());
         }
 
+        /// <summary>
+        /// removes a player's loot and gives them items
+        /// </summary>
+        /// <param name="player">The player to affect</param>
+        /// <param name="items">a list of item ids. use the CitrusLib Item!</param>
+        /// <param name="quantities">a list of quantities for each item</param>
         public static void SetLoot(TABGPlayerServer player, List<int> items, List<int> quantities)
         {
             LootPack lp = new LootPack();
@@ -132,7 +153,11 @@ namespace CitrusLib
         }
 
 
-        //removes the players loot and then gives them these items
+        /// <summary>
+        /// Sets a players loot.
+        /// </summary>
+        /// <param name="player">The Player to effect</param>
+        /// <param name="loot">The LootPack to give to the player.</param>
         public static void SetLoot(TABGPlayerServer player, LootPack loot)
         {
 
@@ -147,16 +172,27 @@ namespace CitrusLib
 
         
 
-        //USE THIS IF GIVING ONE ITEM!
+        /// <summary>
+        /// GIVES one stack of an item to a player
+        /// </summary>
+        /// <param name="player">The player to affect</param>
+        /// <param name="item">The item id. use the CitLib Item enumerator!</param>
+        /// <param name="quantity">Amount of the item to give</param>
         public static void GiveLoot(TABGPlayerServer player, int item, int quantity = 1)
         {
 
             LootPack lp = new LootPack();
             lp.AddLoot(item, quantity);
+            lp.GiveTo(player);
 
             //GivePickUpCommand.Run(null, Citrus.World, player.PlayerIndex, weps, quants.ToArray());
         }
 
+        /// <summary>
+        /// Gives a LootPack of items to a player
+        /// </summary>
+        /// <param name="player">the player to affect</param>
+        /// <param name="lp">The CitLib LootPack</param>
         public static void GiveLoot(TABGPlayerServer player, LootPack lp)
         {
             lp.GiveTo(player);
@@ -165,7 +201,12 @@ namespace CitrusLib
 
 
 
-        //APPARENTLY kicks only work if you WAIT for the player to be connected before kicking them...
+        /// <summary>
+        /// Kicks a player, because the vanilla kick doesnt work under certain conditions.
+        /// </summary>
+        /// <param name="player">The player to kick</param>
+        /// <param name="reason">a KickReason. the player sees this as a number when they are kicked.</param>
+        /// <param name="logReason">A message as to why they are kicked. only printed to the console</param>
         public static void Kick(TABGPlayerServer player, KickReason reason = KickReason.Invalid, string logReason = "")
         {
             if (player == null)
@@ -220,7 +261,7 @@ namespace CitrusLib
         }
 
 
-        //creates a login buffer with a new teamindex for changing teams. for lying to clients
+        //creates a login buffer with a new teamindex for changing teams. for carefully lying to clients...
         static byte[] LoginData(TABGPlayerServer ply, byte newGroupIndex)
         {
 
@@ -262,7 +303,14 @@ namespace CitrusLib
             }
         }
 
-        //'vanilla' parameters
+        /// <summary>
+        /// tries to set a player to the sepecified team.
+        /// beacause a clients team cannot ever change, this uses some wildly convoluted "relative" team id switches of non-client peers to create the illusion of a team change.
+        /// On the server-side (here!), the players are eventually put on the same team.
+        /// the function, as is, sometimes doesnt work because of lag and stuff. Generally its a good idea NOT to spam this function.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="groupIndex"></param>
         public static void SetTeam(TABGPlayerServer p, byte groupIndex)
         {
             PlayerRef player = Citrus.players.Find(pl => pl.player == p);
@@ -285,7 +333,11 @@ namespace CitrusLib
 
 
 
-
+        /// <summary>
+        /// tries to set a player's team. this function uses Citlib PlayerRefs and PlayerTeam objects, which might not be easier for you to use than vanilla ids and bytes in the function above.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="team"></param>
         public static void SetTeam(PlayerRef player, PlayerTeam team)
         {
             //players = players.Distinct().ToList();
@@ -367,7 +419,11 @@ namespace CitrusLib
 
 
 
-        //sends a private parrot message to the player. hopefully sends the parrot straight downwards
+        /// <summary>
+        /// makes the player throw a parrot at their feet with the desired message. Only the player throwing the parrot sees the message.
+        /// </summary>
+        /// <param name="p">The player to through the parrot</param>
+        /// <param name="message">the message</param>
         public static void SelfParrot(TABGPlayerServer p, string message)
         {
             p.UpdateRotation(new Vector2(90, 90));
@@ -405,13 +461,26 @@ namespace CitrusLib
             Citrus.World.SendMessageToClients(EventCode.ThrowChatMessage, buffer, p.PlayerIndex, true, false);
         }
 
-        //makes the recipient see a message from the player. they are the only one who sees the message!
+        /// <summary>
+        /// NOT IMPLEMENTED
+        /// 
+        /// lets a player 'whisper' to another player
+        /// </summary>
+        /// <param name="player">The player whispering</param>
+        /// <param name="recipt">The target Player</param>
+        /// <param name="message">The message...</param>
         public static void Whisper(TABGPlayerServer player, TABGPlayerServer recipt,string message)
         {
 
         }
 
-        //sets player's gear
+        /// <summary>
+        /// Not implemented yet, even though i've made the function before!
+        /// 
+        /// Sets a player's gear. the client doesnt see the change, and should probably be alive during such a change.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="gearData"></param>
         public static void SetGear(TABGPlayerServer player, int[] gearData)
         {
 

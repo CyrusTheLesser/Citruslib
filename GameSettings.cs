@@ -22,23 +22,37 @@ namespace CitrusLib
 
     public static partial class Citrus
     {
-        public static SettingsFile<GameSetting> ExtraSettings = new SettingsFile<GameSetting>("ExtraSettings");
+
+        internal static SettingsFile<GameSetting> ExtraSettings = new SettingsFile<GameSetting>("ExtraSettings");
 
 
 
     }
     
+    /// <summary>
+    /// A serializable setting, used when making custom settings files.
+    /// </summary>
     [Serializable]
     public class SettingObject
     {
+        /// <summary>
+        /// the name of the setting
+        /// </summary>
         [JsonProperty(Order = -2)]
         public string name;
+        /// <summary>
+        /// a description of the setting
+        /// </summary>
         [JsonProperty(Order = -1)]
         public string description;
 
 
     }
 
+    /// <summary>
+    /// A Settings file, containing a list of SettingObjects.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SettingsFile<T> where T: SettingObject
     {
         static CitLog setLog = new CitLog("CitrusLib-Settings", ConsoleColor.Cyan);
@@ -46,17 +60,17 @@ namespace CitrusLib
 
         //public static List<SettingCategory> defaults = new List<SettingCategory>();
 
-        public List<T> settings = new List<T>();
+        internal List<T> settings = new List<T>();
 
-        public List<T> defaults = new List<T>();
+        internal List<T> defaults = new List<T>();
 
         //static SettingFile settings;
 
         /// <summary>
         /// Sets a setting and then writes all settings. use this for mid-match setting changes, via commands for example.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
+        /// <param name="name">the name of a setting to change</param>
+        /// <param name="value">the value to set it to</param>
         public bool SetSetting(string name, string value)
         {
             T g =
@@ -70,7 +84,7 @@ namespace CitrusLib
         }
 
         //when setting a setting to json
-        public static string SubJson(object o)
+        internal static string SubJson(object o)
         {
             return JsonConvert.SerializeObject(o, Formatting.Indented).Replace("\"","'");
         }
@@ -78,7 +92,11 @@ namespace CitrusLib
 
         string path;
 
-
+        /// <summary>
+        /// creates a settings file at the specified path.
+        /// </summary>
+        /// <param name="path">The filepath. if absolute is set to false, the filepath starts in the application's directory</param>
+        /// <param name="absolute">if true, the filepath is relative to the application's install location</param>
         public SettingsFile(string path, bool absolute = false)
         {
             this.path = path+".txt";
@@ -94,7 +112,10 @@ namespace CitrusLib
         }
 
 
-
+        /// <summary>
+        /// reads the settings from it's file. if it doesn't exist, a file with default values is created instead.
+        /// If the file exists, but some settings are missing, those missing settings are set to their defaults and added to the file
+        /// </summary>
         public void ReadSettings()
         {
             //settings.Add("test", "test");
@@ -140,7 +161,7 @@ namespace CitrusLib
                 {
                     if (settings.Find(p=>p.name == g.name)==null)
                     {
-                    //setting is missing from text file... need to rewrite the whole text file!
+                        //setting is missing from text file... need to rewrite the whole text file!
                         setLog.Log(string.Format("settings file was missing default setting {0}", g.name));
                         needsWrite = true;
                         settings.Add(g);
@@ -158,7 +179,9 @@ namespace CitrusLib
         }
 
 
-        //writes all settings to file
+        /// <summary>
+        /// writes all the settings current values to it's file.
+        /// </summary>
         public void WriteSettings()
         {
 
@@ -178,8 +201,8 @@ namespace CitrusLib
         }
 
 
-
-        public string GetString(object o)
+        //i forget what i was doing with this, ignore for now
+        internal string GetString(object o)
         {
             if (o.GetType() == typeof(List<Vector3>))
             {
@@ -214,9 +237,9 @@ namespace CitrusLib
 
 
         /// <summary>
-        /// adds a SettingObject to the DEFAULT settings list. use when initializing the default settings, before reading!
+        /// adds a SettingObject to the DEFAULT settings list. use when initializing the default settings, BEFORE ever reading!
         /// </summary>
-        /// <param name="g"></param>
+        /// <param name="g">The SettingObject to add</param>
         /// <returns></returns>
         public bool AddSetting(T g)
         {
@@ -234,8 +257,8 @@ namespace CitrusLib
         /// <summary>
         /// looks for a setting with name and returns true if found
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="g"></param>
+        /// <param name="name">the name of the setting</param>
+        /// <param name="g">a SettingObject out parameter</param>
         /// <returns></returns>
         public bool TryGetSetting(string name, out T g)
         {
@@ -266,9 +289,15 @@ namespace CitrusLib
 
     }
 
+    /// <summary>
+    /// a common purpose SettingObject. Has a string value. it's reccomended to use this when making settings
+    /// </summary>
     [Serializable]
     public class GameSetting : SettingObject
     {
+        /// <summary>
+        /// the value of the setting
+        /// </summary>
         [JsonProperty(Order = 1)]
         public string value; //current value
         

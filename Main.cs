@@ -95,7 +95,7 @@ namespace CitrusLib
                          Citrus.SelfParrot(player, "unknown parameter: " + prms[0]);
                          break;
                  }
-             }, true,
+             }, 
             pluginName, "Changes or queries a player's team", "<get|set> <player> [index](if setting)",2);
 
             Citrus.AddCommand("goto", delegate (string[] prms, TABGPlayerServer player)
@@ -121,7 +121,7 @@ namespace CitrusLib
                 Citrus.log.Log(string.Format("taking player {0} to {1}", player.PlayerName, find.PlayerName));
                 Citrus.Teleport(player, find.PlayerPosition);
 
-            }, true,
+            }, 
             pluginName, "Brings the command user to the specified player", "<player>",2);
 
             Citrus.AddCommand("bring", delegate (string[] prms, TABGPlayerServer player)
@@ -147,7 +147,7 @@ namespace CitrusLib
                 Citrus.log.Log(string.Format("taking player {0} to {1}", find.PlayerName, player.PlayerName));
                 Citrus.Teleport(find, player.PlayerPosition);
 
-            }, true,
+            }, 
             pluginName, "Brings a player to the command user", "<player>",2);
 
             Citrus.AddCommand("perm-get", delegate (string[] prms, TABGPlayerServer player)
@@ -178,20 +178,18 @@ namespace CitrusLib
                 }
                 PermList.PermPlayer ply = Citrus.permList.players.Find(p => p.epic == (string)find.EpicUserName);
                 int perm = 1;
-                bool admin = false;
                 if (ply != null)
                 {
                     perm = ply.permlevel;
-                    admin = ply.admin;
                 }
 
-                string text = string.Format("{0} has perm level {1} and is {2}an admin", find.PlayerName, perm, admin ? "" : "NOT");
+                string text = string.Format("{0} has perm level {1}", find.PlayerName, perm);
 
                 Citrus.log.Log(text);
                 Citrus.SelfParrot(player, text);
                 //Citrus.Teleport(find, player.PlayerPosition);
 
-            }, true,
+            }, 
            pluginName, "Gets the permission status of the player", "<player>", 1);
 
 
@@ -240,8 +238,7 @@ namespace CitrusLib
                     {
                         name = find.PlayerName,
                         epic = find.EpicUserName,
-                        permlevel = perm,
-                        admin = false
+                        permlevel = perm
                     });
 
                 }
@@ -251,68 +248,10 @@ namespace CitrusLib
 
                 //Citrus.Teleport(find, player.PlayerPosition);
 
-            }, true,
+            },
            pluginName, "SETS the permission status of the player!", "<player>", 4);
 
-            Citrus.AddCommand("admin", delegate (string[] prms, TABGPlayerServer player)
-            {
-                TABGPlayerServer find = null;
-                if (prms.Length != 2)
-                {
-                    Citrus.SelfParrot(player, "admin <name> [level]");
-                    return;
-                }
-                if (!Citrus.PlayerChatSearch(prms[0], out find))
-                {
-                    if (find != null)
-                    {
-                        Citrus.SelfParrot(player, "multiple results for: " + prms[0]);
-                    }
-                    else
-                    {
-                        Citrus.SelfParrot(player, "no results for: " + prms[0]);
-                    }
-                    return;
-                }
-
-                if (Citrus.permList == null)
-                {
-                    Citrus.log.Log(string.Format("Perm list doesn't exist!"));
-                    return;
-                }
-                bool adminn = false;
-                if (!bool.TryParse(prms[2], out adminn))
-                {
-                    Citrus.log.Log(string.Format("Invalid bool {0}", prms[2]));
-                    return;
-                }
-
-                PermList.PermPlayer ply = Citrus.permList.players.Find(p => p.epic == (string)find.EpicUserName);
-
-                if (ply != null)
-                {
-                    ply.admin = adminn;
-                }
-                else
-                {
-                    Citrus.permList.players.Add(new PermList.PermPlayer
-                    {
-                        name = find.PlayerName,
-                        epic = find.EpicUserName,
-                        permlevel = 1,
-                        admin = adminn
-                    });
-
-                }
-
-                Citrus.WriteNewPermList();
-
-
-                //Citrus.Teleport(find, player.PlayerPosition);
-
-            }, true,
-           pluginName, "SETS the admin status of the player!", "<player>", 4);
-
+          
             Citrus.AddCommand("start", delegate (string[] prms, TABGPlayerServer player)
              {
                  float time = 30;
@@ -332,7 +271,7 @@ namespace CitrusLib
 
                  }
                  Citrus.World.GameRoomReference.StartCountDown(time);
-             }, true,
+             },
             pluginName, "Starts the countdown timer", "[time]",1);
 
             Citrus.AddCommand("list", delegate (string[] prms, TABGPlayerServer player)
@@ -419,7 +358,7 @@ namespace CitrusLib
 
 
                 Citrus.log.Log(result);
-            }, true,
+            }, 
             pluginName, "lists different things in the console.", "<teams|players|playerrefs|all>",2);
 
             Citrus.AddCommand("id", delegate (string[] prms, TABGPlayerServer player)
@@ -449,7 +388,7 @@ namespace CitrusLib
 
 
 
-            }, true,
+            }, 
             pluginName, "Gets the ID of a player with the given name.", "<name>");
 
             Citrus.AddCommand("send", delegate (string[] prms, TABGPlayerServer player)
@@ -488,7 +427,7 @@ namespace CitrusLib
                 Citrus.log.Log(string.Format("taking player {0} to {1}", find.PlayerName, find2.PlayerName));
                 Citrus.Teleport(find, find2.PlayerPosition);
 
-            }, true,
+            }, 
             pluginName, "Sends the first player to the second player", "<player> <player>",2);
 
             Citrus.AddCommand("name", delegate (string[] prms, TABGPlayerServer player)
@@ -524,7 +463,7 @@ namespace CitrusLib
 
 
 
-            }, true,
+            }, 
             pluginName, "Gets the NAME of a player with the given byte playerindex.", "[id]");
 
             Citrus.AddCommand("epic", delegate (string[] prms, TABGPlayerServer player)
@@ -556,7 +495,7 @@ namespace CitrusLib
 
 
 
-            }, true,
+            }, 
             pluginName, "Gets the epic id of a player with the given name or index", "<name>");
 
             
@@ -597,7 +536,7 @@ namespace CitrusLib
 
 
 
-            }, true,
+            }, 
             pluginName, "gives the user an item with an optional amount", "[id] [amount(optional)]",2);
 
             Citrus.AddCommand("gift", delegate (string[] prms, TABGPlayerServer player)
@@ -651,7 +590,7 @@ namespace CitrusLib
 
 
 
-            }, true,
+            }, 
             pluginName, "gives the user an item with an optional amount", "<player> [id] [amount(optional)]",2);
 
 

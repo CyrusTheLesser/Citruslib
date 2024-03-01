@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 
 namespace CitrusLib
 {
-    //better way to create packs of loot items for giving items to players
+    /// <summary>
+    /// A class for creating groups of items, to simplify item-giving
+    /// </summary>
     public class LootPack
     {
         List<int> types;
         List<byte> amounts;
 
+        /// <summary>
+        /// makes a new, empty lootpack.
+        /// </summary>
         public LootPack()
         {
             types = new List<int>();
@@ -21,6 +26,10 @@ namespace CitrusLib
             
         }
 
+        /// <summary>
+        /// creates a lootpack using TABG's Loot array as an input
+        /// </summary>
+        /// <param name="loot">An array of Loot structs.</param>
         public LootPack(Loot[] loot)
         {
             types = new List<int>();
@@ -33,6 +42,11 @@ namespace CitrusLib
             }
         }
 
+        /// <summary>
+        /// adds a stack of an item to the loot pack.
+        /// </summary>
+        /// <param name="id">the id of the item. use the Citlib Item enum!</param>
+        /// <param name="amount">the amount to add.</param>
         public void AddLoot(int id, int amount)
         {
             if (amount > (int)byte.MaxValue)
@@ -45,7 +59,11 @@ namespace CitrusLib
         }
 
 
-
+        /// <summary>
+        /// creates a lootpack that is a copy of the provided list of playerlootitems, which can be read from a TABGPlayerServer.
+        /// </summary>
+        /// <param name="loot"></param>
+        /// <returns></returns>
         public static LootPack CopyPlayerLoot(List<TABGPlayerLootItem> loot)
         {
             LootPack ret = new LootPack();
@@ -59,6 +77,10 @@ namespace CitrusLib
             return ret;
         }
 
+        /// <summary>
+        /// gives the items to the player. the player should be alive
+        /// </summary>
+        /// <param name="player">the player to recieve the items</param>
         public void GiveTo(TABGPlayerServer player)
         {
             byte[] buffer = new byte[2 + types.Count() * 9];
@@ -98,9 +120,15 @@ namespace CitrusLib
 
     }
 
+    /// <summary>
+    /// an enum list of every vanilla item. helps hard-coding item-give commands and lootpacks easier
+    /// </summary>
+
     public enum Item : int
     {
+#pragma warning disable CS1591 //im not writing docs on every item
         _45_ACP = 0,
+
         _Big_Ammo = 1,
         _Bolts = 2,
         _Money_Ammo = 3,
@@ -428,6 +456,8 @@ namespace CitrusLib
         _Really_Big_Barrett = 325,
         _Sniper_Shotgun=326,
         _Double_Shot = 327,
-        _VSS = 328,
+        _VSS = 328
+#pragma warning restore CS1591
     }
+
 }

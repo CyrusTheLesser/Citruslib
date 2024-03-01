@@ -1,0 +1,356 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CitrusLib</name>
+    </assembly>
+    <members>
+        <member name="M:CitrusLib.Citrus.DoOnceAlive(System.Action)">
+            <summary>
+            NOT IMPLEMENTED Yet
+            
+            Performs an action once the player is alive and sending position updates again. The action is performed immediately if the player is currently alive.
+            </summary>
+            <param name="action">The action to perform</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.WaitThen(System.Single,System.Action)">
+            <summary>
+            performs an action after a set amount of time
+            </summary>
+            <param name="time"></param>
+            <param name="a"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.Citrus.WaitUntil(System.Func{System.Boolean},System.Action,System.Single)">
+            <summary>
+            performs an action once a condition is true
+            </summary>
+            <param name="condition">the condition to be met</param>
+            <param name="a">the action to perform</param>
+            <param name="tick">how often to check the condition, in seconds</param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.Citrus.WaitThenAsLongAs(System.Single,System.Func{System.Boolean},System.Action,System.Action,System.Single)">
+            <summary>
+            performs an action after a set amount of time, as long as the condition remains true throughout the duration. can include a fail action as well
+            </summary>
+            <param name="time">time to wait before the succeed action</param>
+            <param name="condition">the condition to check</param>
+            <param name="a">the action to perform if the test succeeds</param>
+            <param name="tick">how often to check the condition</param>
+            <param name="fail">the action to invoke if the condition ever becomes false</param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.Citrus.PlayerChatSearch(System.String,Landfall.Network.TABGPlayerServer@)">
+            <summary>
+            searches for a player first by their username, and then by index using the inputted string. good for chat commands
+            </summary>
+            <param name="name"></param>
+            <param name="result"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.Citrus.RandomInRing(System.Int32,System.Predicate{UnityEngine.Vector3})">
+            <summary>
+            gets a random point in the current Ring's white circle, on the ground. Allows the use of a predicate for more specific conditions
+            </summary>
+            <param name="tries">the amount of times to try to find a valid point.</param>
+            <param name="func">a predicate function to further evaluate the sampled position</param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.Citrus.RandomInCircle(UnityEngine.Vector3,System.Single,System.Int32,System.Predicate{UnityEngine.Vector3},System.Int32)">
+            <summary>
+            gets a random point on land within the specified radius. Allows the use of a predicate for more specific conditions
+            </summary>
+            <param name="pos">the center of the search circle</param>
+            <param name="radius">the radius of the search circle</param>
+            <param name="tries">amount of times to try to find a point</param>
+            <param name="func">a predicate function for further validating a point</param>
+            <param name="initTries">for internal function use for debugging.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.Citrus.AddCommand(System.String[],System.Action{System.String[],Landfall.Network.TABGPlayerServer},System.Boolean,System.String,System.String,System.String)">
+            <summary>
+            aww yeah.
+            
+            Adds a Chat command that players, which an appropriate perm level, can execut in-game.
+            </summary>
+            <param name="names">an array of names that would invoke this command</param>
+            <param name="function">An action that takes further chat parameters, and the excecuting player, as input. this is where you write what the command does!</param>
+            <param name="adminOnly">If the player has to be an Admin to excecute this function. I reccomend using permlevel instead...</param>
+            <param name="modName">The name of the mod this command is from. helpful for sorting, when the commands are printed to a file.</param>
+            <param name="description">The description of the command, for when it is printed</param>
+            <param name="paramDesc">a string example of the parameters used in the function, for printing</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.AddCommand(System.String,System.Action{System.String[],Landfall.Network.TABGPlayerServer},System.Boolean,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            ohh yeah.
+            
+            Adds a Chat command that players, which an appropriate perm level, can execut in-game.
+            </summary>
+            <param name="name">the name of the command</param>
+            <param name="function">An action that takes further chat parameters, and the excecuting player, as input. this is where you write what the command does!</param>
+            <param name="adminOnly">If the player has to be an Admin to excecute this function. I reccomend using permlevel instead...</param>
+            <param name="modName">The name of the mod this command is from. helpful for sorting, when the commands are printed to a file.</param>
+            <param name="description">The description of the command, for when it is printed</param>
+            <param name="paramDesc">a string example of the parameters used in the function, for printing</param>
+            <param name="permLevel">the required perm level for the command.</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.Teleport(Landfall.Network.TABGPlayerServer,UnityEngine.Vector3,System.Boolean)">
+            <summary>
+            teleports a living player. if the player is dead, they are respawned.
+            </summary>
+            <param name="player">The player to teleport</param>
+            <param name="pos">the position to teleport the player</param>
+            <param name="keepLoot">whether to retain the player's loot or remove it.</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.Teleport(Landfall.Network.TABGPlayerServer,UnityEngine.Vector3,UnityEngine.Vector2,System.Boolean)">
+            <summary>
+            teleports a living player. if the player is dead, they are respawned.
+            </summary>
+            <param name="player">The player to teleport</param>
+            <param name="pos">the position to teleport the player</param>
+            <param name="rot">the rotation to have the player face</param>
+            <param name="keepLoot">whether to retain the player's loot or remove it.</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.Respawn(Landfall.Network.TABGPlayerServer,UnityEngine.Vector3,System.Boolean)">
+            <summary>
+            respawns the player using the vanilla method. Also works as a means to teleport players, reviving them if they are dead. can be configured to wait until the player's time scale returns to normal (about 7 seconds after death)
+            </summary>
+            <param name="player"></param>
+            <param name="pos"></param>
+            <param name="waitUntilReady"></param>
+        </member>
+        <member name="M:CitrusLib.Citrus.KillPlayer(Landfall.Network.TABGPlayerServer,Landfall.Network.TABGPlayerServer)">
+            <summary>
+            kills a player.
+            </summary>
+            <param name="player">The player to kill</param>
+            <param name="killer">Optional. allows a player to be awarded the kill</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.SetLoot(Landfall.Network.TABGPlayerServer,System.Int32[],System.Int32[])">
+            <summary>
+            removes a player's loot and gives them items
+            </summary>
+            <param name="player">The player to affect</param>
+            <param name="items">an array of item ids. use the CitrusLib Item!</param>
+            <param name="quantities">an array of quantities for each item</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.SetLoot(Landfall.Network.TABGPlayerServer,System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{System.Int32})">
+            <summary>
+            removes a player's loot and gives them items
+            </summary>
+            <param name="player">The player to affect</param>
+            <param name="items">a list of item ids. use the CitrusLib Item!</param>
+            <param name="quantities">a list of quantities for each item</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.SetLoot(Landfall.Network.TABGPlayerServer,CitrusLib.LootPack)">
+            <summary>
+            Sets a players loot.
+            </summary>
+            <param name="player">The Player to effect</param>
+            <param name="loot">The LootPack to give to the player.</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.GiveLoot(Landfall.Network.TABGPlayerServer,System.Int32,System.Int32)">
+            <summary>
+            GIVES one stack of an item to a player
+            </summary>
+            <param name="player">The player to affect</param>
+            <param name="item">The item id. use the CitLib Item enumerator!</param>
+            <param name="quantity">Amount of the item to give</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.GiveLoot(Landfall.Network.TABGPlayerServer,CitrusLib.LootPack)">
+            <summary>
+            Gives a LootPack of items to a player
+            </summary>
+            <param name="player">the player to affect</param>
+            <param name="lp">The CitLib LootPack</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.Kick(Landfall.Network.TABGPlayerServer,Epic.OnlineServices.AntiCheatCommon.KickReason,System.String)">
+            <summary>
+            Kicks a player, because the vanilla kick doesnt work under certain conditions.
+            </summary>
+            <param name="player">The player to kick</param>
+            <param name="reason">a KickReason. the player sees this as a number when they are kicked.</param>
+            <param name="logReason">A message as to why they are kicked. only printed to the console</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.SetTeam(Landfall.Network.TABGPlayerServer,System.Byte)">
+            <summary>
+            tries to set a player to the sepecified team.
+            beacause a clients team cannot ever change, this uses some wildly convoluted "relative" team id switches of non-client peers to create the illusion of a team change.
+            On the server-side (here!), the players are eventually put on the same team.
+            the function, as is, sometimes doesnt work because of lag and stuff. Generally its a good idea NOT to spam this function.
+            </summary>
+            <param name="p"></param>
+            <param name="groupIndex"></param>
+        </member>
+        <member name="M:CitrusLib.Citrus.SetTeam(CitrusLib.PlayerRef,CitrusLib.PlayerTeam)">
+            <summary>
+            tries to set a player's team. this function uses Citlib PlayerRefs and PlayerTeam objects, which might not be easier for you to use than vanilla ids and bytes in the function above.
+            </summary>
+            <param name="player"></param>
+            <param name="team"></param>
+        </member>
+        <member name="M:CitrusLib.Citrus.SelfParrot(Landfall.Network.TABGPlayerServer,System.String)">
+            <summary>
+            makes the player throw a parrot at their feet with the desired message. Only the player throwing the parrot sees the message.
+            </summary>
+            <param name="p">The player to through the parrot</param>
+            <param name="message">the message</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.Whisper(Landfall.Network.TABGPlayerServer,Landfall.Network.TABGPlayerServer,System.String)">
+            <summary>
+            NOT IMPLEMENTED
+            
+            lets a player 'whisper' to another player
+            </summary>
+            <param name="player">The player whispering</param>
+            <param name="recipt">The target Player</param>
+            <param name="message">The message...</param>
+        </member>
+        <member name="M:CitrusLib.Citrus.SetGear(Landfall.Network.TABGPlayerServer,System.Int32[])">
+            <summary>
+            Not implemented yet, even though i've made the function before!
+            
+            Sets a player's gear. the client doesnt see the change, and should probably be alive during such a change.
+            </summary>
+            <param name="player"></param>
+            <param name="gearData"></param>
+        </member>
+        <member name="T:CitrusLib.CitLog">
+            <summary>
+            A Class for prettier debug logging.
+            </summary>
+        </member>
+        <member name="M:CitrusLib.CitLog.#ctor(System.String,System.ConsoleColor)">
+            <summary>
+            Makes a new CitLog for logging stuff in your mod!
+            </summary>
+            <param name="n">The name of your mod, or a sub-name if your mod has multiple seperate parts</param>
+            <param name="c">The color of the name.</param>
+        </member>
+        <member name="M:CitrusLib.CitLog.Log(System.String,System.Boolean)">
+            <summary>
+            Logs a message to the console
+            </summary>
+            <param name="text">The message to display</param>
+            <param name="error">Whether the message is an error.</param>
+        </member>
+        <member name="M:CitrusLib.CitLog.LogError(System.String)">
+            <summary>
+            logs an error to the console.
+            </summary>
+            <param name="text">the message to display.</param>
+        </member>
+        <member name="T:CitrusLib.SettingObject">
+            <summary>
+            A serializable setting, used when making custom settings files.
+            </summary>
+        </member>
+        <member name="F:CitrusLib.SettingObject.name">
+            <summary>
+            the name of the setting
+            </summary>
+        </member>
+        <member name="F:CitrusLib.SettingObject.description">
+            <summary>
+            a description of the setting
+            </summary>
+        </member>
+        <member name="T:CitrusLib.SettingsFile`1">
+            <summary>
+            A Settings file, containing a list of SettingObjects.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:CitrusLib.SettingsFile`1.SetSetting(System.String,System.String)">
+            <summary>
+            Sets a setting and then writes all settings. use this for mid-match setting changes, via commands for example.
+            </summary>
+            <param name="name">the name of a setting to change</param>
+            <param name="value">the value to set it to</param>
+        </member>
+        <member name="M:CitrusLib.SettingsFile`1.#ctor(System.String,System.Boolean)">
+            <summary>
+            creates a settings file at the specified path.
+            </summary>
+            <param name="path">The filepath. if absolute is set to false, the filepath starts in the application's directory</param>
+            <param name="absolute">if true, the filepath is relative to the application's install location</param>
+        </member>
+        <member name="M:CitrusLib.SettingsFile`1.ReadSettings">
+            <summary>
+            reads the settings from it's file. if it doesn't exist, a file with default values is created instead.
+            If the file exists, but some settings are missing, those missing settings are set to their defaults and added to the file
+            </summary>
+        </member>
+        <member name="M:CitrusLib.SettingsFile`1.WriteSettings">
+            <summary>
+            writes all the settings current values to it's file.
+            </summary>
+        </member>
+        <member name="M:CitrusLib.SettingsFile`1.AddSetting(`0)">
+            <summary>
+            adds a SettingObject to the DEFAULT settings list. use when initializing the default settings, BEFORE ever reading!
+            </summary>
+            <param name="g">The SettingObject to add</param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.SettingsFile`1.TryGetSetting(System.String,`0@)">
+            <summary>
+            looks for a setting with name and returns true if found
+            </summary>
+            <param name="name">the name of the setting</param>
+            <param name="g">a SettingObject out parameter</param>
+            <returns></returns>
+        </member>
+        <member name="T:CitrusLib.GameSetting">
+            <summary>
+            a common purpose SettingObject. Has a string value. it's reccomended to use this when making settings
+            </summary>
+        </member>
+        <member name="F:CitrusLib.GameSetting.value">
+            <summary>
+            the value of the setting
+            </summary>
+        </member>
+        <member name="T:CitrusLib.LootPack">
+            <summary>
+            A class for creating groups of items, to simplify item-giving
+            </summary>
+        </member>
+        <member name="M:CitrusLib.LootPack.#ctor">
+            <summary>
+            makes a new, empty lootpack.
+            </summary>
+        </member>
+        <member name="M:CitrusLib.LootPack.#ctor(Loot[])">
+            <summary>
+            creates a lootpack using TABG's Loot array as an input
+            </summary>
+            <param name="loot">An array of Loot structs.</param>
+        </member>
+        <member name="M:CitrusLib.LootPack.AddLoot(System.Int32,System.Int32)">
+            <summary>
+            adds a stack of an item to the loot pack.
+            </summary>
+            <param name="id">the id of the item. use the Citlib Item enum!</param>
+            <param name="amount">the amount to add.</param>
+        </member>
+        <member name="M:CitrusLib.LootPack.CopyPlayerLoot(System.Collections.Generic.List{Landfall.Network.TABGPlayerLootItem})">
+            <summary>
+            creates a lootpack that is a copy of the provided list of playerlootitems, which can be read from a TABGPlayerServer.
+            </summary>
+            <param name="loot"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CitrusLib.LootPack.GiveTo(Landfall.Network.TABGPlayerServer)">
+            <summary>
+            gives the items to the player. the player should be alive
+            </summary>
+            <param name="player">the player to recieve the items</param>
+        </member>
+        <member name="T:CitrusLib.Item">
+            <summary>
+            an enum list of every vanilla item. helps hard-coding item-give commands and lootpacks easier
+            </summary>
+        </member>
+    </members>
+</doc>

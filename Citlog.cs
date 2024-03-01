@@ -24,19 +24,21 @@ namespace CitrusLib
     public static partial class Citrus
     {
         //my logger for Citruslib debugging. dont use it! make your own CitLog!
-        public static CitLog log = new CitLog("CitrusLib", ConsoleColor.Cyan);
+        internal static CitLog log = new CitLog("CitrusLib", ConsoleColor.Cyan);
 
-        public static bool landLogSupressed = false;
+        internal static bool landLogSupressed = false;
 
         //takes over landfall's logger to have it's format match mine.
-        public static CitLog landLog = new CitLog("LandLog", ConsoleColor.Gray);
+        internal static CitLog landLog = new CitLog("LandLog", ConsoleColor.Gray);
 
         
 
 
-
     }
 
+    /// <summary>
+    /// A Class for prettier debug logging.
+    /// </summary>
     public class CitLog
     {
         string modName;
@@ -56,6 +58,11 @@ namespace CitrusLib
             modColor = c;
         }
 
+        /// <summary>
+        /// Logs a message to the console
+        /// </summary>
+        /// <param name="text">The message to display</param>
+        /// <param name="error">Whether the message is an error.</param>
         public void Log(string text, bool error = false)
         {
             if (this == Citrus.landLog & Citrus.landLogSupressed)
@@ -132,6 +139,10 @@ namespace CitrusLib
             lastMessage = text;
         }
 
+        /// <summary>
+        /// logs an error to the console.
+        /// </summary>
+        /// <param name="text">the message to display.</param>
         public void LogError(string text)
         {
             Log(text, true);
