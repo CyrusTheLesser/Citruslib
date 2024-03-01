@@ -24,7 +24,7 @@ namespace CitrusLib
     {
         public const string pluginGuid = "citrusbird.tabg.citruslib";
         public const string pluginName = "Citrus Lib";
-        public const string pluginVersion = "0.3";
+        public const string pluginVersion = "0.4";
 
         public void Awake()
         {
