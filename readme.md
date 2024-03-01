@@ -3,116 +3,114 @@ A code library for Totally Accurate Battlegrounds Dedicated Server to make moddi
 Adds the ability to define new chat commands, create custom settings files, and adds functions for altering players in ways that wasn't present in the unmodified server.
 
 <h1>default chat commands list</h1>
-most of the commands require a PermLevel higher than 0, which is the default for players. you need to add players using their EPIC ID in the permlist file
 
+most of the commands require a PermLevel higher than 0, which is the default for players. you need to add players using their EPIC ID in the permlist file.
+
+These commands are used in-game, not in the console!
+
+<br>
+<br>
 
 Gets the permission status of the player
 
-Admin: True, Perm Level: 1
+Perm Level: 1
 
-/perm-get <player>
+`/perm-get <player>`
 
-
+<br>
 
 Starts the countdown timer
 
-Admin: True, Perm Level: 1
+Perm Level: 1
 
-/start [time]
+`/start [time]`
 
-
+<br>
 
 Gets the ID of a player with the given name.
 
-Admin: True, Perm Level: 1
+Perm Level: 1
 
-/id <name>
+`/id <name>`
 
-
+<br>
 
 Gets the NAME of a player with the given byte playerindex.
 
-Admin: True, Perm Level: 1
+Perm Level: 1
 
-/name [id]
+`/name [id]`
 
-
+<br>
 
 Gets the epic id of a player with the given name or index
 
-Admin: True, Perm Level: 1
+Perm Level: 1
 
-/epic <name>
+`/epic <name>`
 
-
+<br>
 
 Changes or queries a player's team
 
-Admin: True, Perm Level: 2
+Perm Level: 2
 
-/team <get|set> <player> [index](if setting)
+`/team <get|set> <player> [index](if setting)`
 
-
+<br>
 
 Brings the command user to the specified player
 
-Admin: True, Perm Level: 2
+Perm Level: 2
 
-/goto <player>
+`/goto <player>`
 
-
+<br>
 
 Brings a player to the command user
 
-Admin: True, Perm Level: 2
+Perm Level: 2
 
-/bring <player>
+`/bring <player>`
 
-
+<br>
 
 lists different things in the console.
 
-Admin: True, Perm Level: 2
+Perm Level: 2
 
-/list <teams|players|playerrefs|all>
+`/list <teams|players|playerrefs|all>`
 
-
+<br>
 
 Sends the first player to the second player
 
-Admin: True, Perm Level: 2
+Perm Level: 2
 
-/send <player> <player>
+`/send <player> <player>`
 
-
-
-gives the user an item with an optional amount
-
-Admin: True, Perm Level: 2
-
-/give [id] [amount(optional)]
-
-
+<br>
 
 gives the user an item with an optional amount
 
-Admin: True, Perm Level: 2
+Perm Level: 2
 
-/gift <player> [id] [amount(optional)]
+`/give [id] [amount(optional)]`
 
+<br>
 
+gives the target an item with an optional amount
+
+Perm Level: 2
+
+`/gift <player> [id] [amount(optional)]`
+
+<br>
 
 SETS the permission status of the player!
 
-Admin: True, Perm Level: 4
+Perm Level: 4
 
-/perm-set <player>
+`/perm-set <player>`
 
-
-
-SETS the admin status of the player!
-
-Admin: True, Perm Level: 4
-
-/admin <player>
 
