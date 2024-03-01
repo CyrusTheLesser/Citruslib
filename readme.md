@@ -4,7 +4,7 @@ Adds the ability to define new chat commands, create custom settings files, and 
 
 <h1>default chat commands list</h1>
 
-most of the commands require a PermLevel higher than 0, which is the default for players. you need to add players using their EPIC ID in the permlist file.
+most of the commands require a PermLevel higher than 0, which is the default for players. you need to add players using their EPIC ID in the permlist file. A player can find their EPIC ID in the player log file, located in LocalLow/Landfall/ect/ect
 
 These commands are used in-game, not in the console!
 
