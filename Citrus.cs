@@ -15,7 +15,6 @@ using Unity.Networking.Transport;
 using UnityEngine;
 
 
-
 namespace CitrusLib
 {
     
@@ -63,26 +62,27 @@ namespace CitrusLib
 
 
         /// <summary>
-        /// NOT IMPLEMENTED Yet
-        /// 
         /// Performs an action once the player is alive and sending position updates again. The action is performed immediately if the player is currently alive.
+        /// 
+        /// good uses of this are team changes and gear changes, as the player should be alive for those
         /// </summary>
         /// <param name="action">The action to perform</param>
-        public static void DoOnceAlive(Action action)
+        public static void DoOnceAlive(PlayerRef p, Action action)
         {
-            
+            WaitUntil(() => { return (bool)(p.data["aliveAware"]); },action, 0.1f);
         }
-        /*
-        public static async void WaitUntil(Func<bool> condition, Action action)
+
+        //TABGPlayerServer version
+        public static void DoOnceAlive(TABGPlayerServer p, Action action)
         {
-            while(!condition.Invoke())
+            PlayerRef pr = players.Find(prf => prf.player == p);
+            if (pr == null)
             {
-                yield return new WaitForEndOfFrame();
+                log.LogError("Player wasnt found! Action Cancelled!");
+                return;
             }
-
-
-            yield return null;
-        }*/
+            DoOnceAlive(pr, action);
+        }
 
         /// <summary>
         /// performs an action after a set amount of time
@@ -90,11 +90,10 @@ namespace CitrusLib
         /// <param name="time"></param>
         /// <param name="a"></param>
         /// <returns></returns>
-        public static IEnumerator WaitThen(float time, Action a)
+        public static async void WaitThen(float time, Action a)
         {
-            yield return new WaitForSecondsRealtime(time);
+            await Task.Delay((int)(time * 1000));
             a();
-            yield break;
         }
 
         /// <summary>
@@ -102,24 +101,25 @@ namespace CitrusLib
         /// </summary>
         /// <param name="condition">the condition to be met</param>
         /// <param name="a">the action to perform</param>
-        /// <param name="tick">how often to check the condition, in seconds</param>
+        /// <param name="tick">how often to check the condition, in seconds. dont set very low unless your condition is performant!</param>
         /// <returns></returns>
-        public static IEnumerator WaitUntil(Func<bool> condition, Action a, float tick = 0.2f)
+
+        internal static async void WaitUntil(Func<bool> condition, Action a, float tick = 0.2f)
         {
             while (!condition.Invoke())
             {
                 if (tick <= 0)
                 {
-                    yield return new WaitForEndOfFrame();
+                    await Task.Yield();
                 }
                 else
                 {
-                    yield return new WaitForSecondsRealtime(tick);
+                    await Task.Delay((int)(tick * 1000));
                 }
 
             }
             a();
-            yield break;
+            
         }
 
 
@@ -132,7 +132,7 @@ namespace CitrusLib
         /// <param name="tick">how often to check the condition</param>
         /// <param name="fail">the action to invoke if the condition ever becomes false</param>
         /// <returns></returns>
-        public static IEnumerator WaitThenAsLongAs(float time, Func<bool> condition, Action a, Action fail, float tick = 0.2f)
+        public static async void WaitThenAsLongAs(float time, Func<bool> condition, Action a, Action fail, float tick = 0.2f)
         {
             float timeStart = Time.timeSinceLevelLoad;
             while(Time.timeSinceLevelLoad < timeStart+time)
@@ -143,16 +143,16 @@ namespace CitrusLib
                     {
                         fail();
                     }
-                    yield break;
+                    return;
                 }
 
                 if (tick <= 0)
                 {
-                    yield return new WaitForEndOfFrame();
+                    await Task.Yield();
                 }
                 else
                 {
-                    yield return new WaitForSecondsRealtime(tick);
+                    await Task.Delay((int)(tick * 1000));
                 }
 
             }
@@ -161,7 +161,6 @@ namespace CitrusLib
                 a();
             }
             
-            yield break;
         }
 
 
@@ -391,6 +390,7 @@ namespace CitrusLib
             data = new Dictionary<string, object>();
             this.player = player;
             data.Add("originalTeam", player.GroupIndex);
+            data.Add("aliveAware",!player.IsDead);
             //data["originalTeam"] = player.GroupIndex;
             //data["allies"] = new List<PlayerRef>();
             //data.Add("allies", new List<PlayerRef>());

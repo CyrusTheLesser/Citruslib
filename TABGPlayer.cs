@@ -79,7 +79,9 @@ namespace CitrusLib
      
 
         /// <summary>
-        /// respawns the player using the vanilla method. Also works as a means to teleport players, reviving them if they are dead. can be configured to wait until the player's time scale returns to normal (about 7 seconds after death)
+        /// respawns the player using the vanilla method. Also works as a means to teleport players, reviving them if they are dead. 
+        /// 
+        /// use waituntill ready if the player JUST DIED and you want them to respawn as soon as reasonably possible (after the player slow-motion-effect wears off)
         /// </summary>
         /// <param name="player"></param>
         /// <param name="pos"></param>
@@ -100,7 +102,7 @@ namespace CitrusLib
         }
 
         /// <summary>
-        /// kills a player.
+        /// kills a player. probably doesnt send them to the respawn minigame, and hopefully doesnt kick the player either
         /// </summary>
         /// <param name="player">The player to kill</param>
         /// <param name="killer">Optional. allows a player to be awarded the kill</param>
@@ -112,6 +114,7 @@ namespace CitrusLib
                 return;
             }
             player.Kill();
+     
             player.TakeDamage(200f);
 
             if (killer != null)
@@ -121,7 +124,34 @@ namespace CitrusLib
                 Citrus.World.GameRoomReference.CurrentGameKills.AddKillForTeam(groupIndex);
             }
 
-            //TODO: SEND KILL MESSAGE
+            byte killid = killer == null ? byte.MaxValue : killer.PlayerIndex;
+
+
+            byte[] bytes = new UnicodeEncoding().GetBytes(player.PlayerName);
+            byte[] buffer = new byte[5 + bytes.Length + 4];
+            using (MemoryStream memoryStream = new MemoryStream(buffer))
+            {
+                using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                {
+                    binaryWriter.Write(player.PlayerIndex);
+                    binaryWriter.Write(killid);
+                    binaryWriter.Write(byte.MaxValue);
+                    binaryWriter.Write((byte)bytes.Length);
+                    binaryWriter.Write(bytes);
+                    if (killer != null)
+                    {
+                        binaryWriter.Write(killer.WeaponType);
+                    }
+                    else
+                    {
+                        binaryWriter.Write(int.MaxValue);
+                    }
+                    binaryWriter.Write(false);
+                }
+            }
+            Citrus.World.SendMessageToClients(EventCode.PlayerDead, buffer, byte.MaxValue, true, false);
+
+            
 
         }
 

@@ -128,7 +128,6 @@ namespace CitrusLib
     {
 #pragma warning disable CS1591 //im not writing docs on every item
         _45_ACP = 0,
-
         _Big_Ammo = 1,
         _Bolts = 2,
         _Money_Ammo = 3,

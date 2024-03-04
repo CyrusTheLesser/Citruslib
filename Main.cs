@@ -216,12 +216,14 @@ namespace CitrusLib
 
                 if (Citrus.permList == null)
                 {
+                    Citrus.SelfParrot(player, "the permlist doesnt exist somehow??");
                     Citrus.log.Log(string.Format("Perm list doesn't exist!"));
                     return;
                 }
                 int perm = 1;
                 if (!int.TryParse(prms[2], out perm))
                 {
+                    Citrus.SelfParrot(player, string.Format("Invalid integer {0}", prms[2]));
                     Citrus.log.Log(string.Format("Invalid integer {0}", prms[2]));
                     return;
                 }
@@ -251,7 +253,135 @@ namespace CitrusLib
             },
            pluginName, "SETS the permission status of the player!", "<player>", 4);
 
-          
+
+            Citrus.AddCommand("goto_pos", delegate (string[] prms, TABGPlayerServer player)
+            {
+                if (prms.Length != 3)
+                {
+                    Citrus.SelfParrot(player, "goto_pos <x> <y> <z>");
+                    return;
+                }
+                float x=0, y=0, z=0;
+                if(!(float.TryParse(prms[0], out x)& float.TryParse(prms[1], out y)& float.TryParse(prms[2], out z)))
+                {
+                    Citrus.SelfParrot(player, "there was an issue parsing the coordinates you provided!");
+                    return;
+                }
+                
+                Citrus.log.Log(string.Format("taking player {0} to {1},{2},{3}", player.PlayerName, x,y,z));
+                Citrus.Teleport(player, new Vector3(x,y,z));
+
+            },
+            pluginName, "teleports the player to the specified coordinates", "(x) (y) (z)", 2);
+
+            Citrus.AddCommand("send_pos", delegate (string[] prms, TABGPlayerServer player)
+            {
+                if (prms.Length != 4)
+                {
+                    Citrus.SelfParrot(player, "send_pos <name/id> <x> <y> <z>");
+                    return;
+                }
+                TABGPlayerServer find = null;
+
+                if (!Citrus.PlayerChatSearch(prms[0],out find))
+                {
+                    if (find != null)
+                    {
+                        Citrus.SelfParrot(player, "multiple results for: " + prms[0]);
+                    }
+                    else
+                    {
+                        Citrus.SelfParrot(player, "no results for: " + prms[0]);
+                    }
+                    return;
+                }
+
+
+                float x = 0, y = 0, z = 0;
+                if (!(float.TryParse(prms[1], out x) & float.TryParse(prms[2], out y) & float.TryParse(prms[3], out z)))
+                {
+                    Citrus.SelfParrot(player, "there was an issue parsing the coordinates you provided!");
+                    return;
+                }
+
+                Citrus.log.Log(string.Format("taking player {0} to {1},{2},{3}", player.PlayerName, x, y, z));
+                Citrus.Teleport(player, new Vector3(x, y, z));
+
+            },
+            pluginName, "teleports the specified player to the specified coordinates", "<name> (x) (y) (z)", 2);
+
+            Citrus.AddCommand("get_pos", delegate (string[] prms, TABGPlayerServer player)
+            {
+                if (prms.Length > 1)
+                {
+                    Citrus.SelfParrot(player, "get_pos <name(optional>");
+                    return;
+                }
+            TABGPlayerServer find = player;
+                if (prms.Length == 1)
+                {
+
+
+                    if (!Citrus.PlayerChatSearch(prms[0], out find))
+                    {
+                        if (find != null)
+                        {
+                            Citrus.SelfParrot(player, "multiple results for: " + prms[0]);
+                        }
+                        else
+                        {
+                            Citrus.SelfParrot(player, "no results for: " + prms[0]);
+                        }
+                        return;
+                    }
+                }
+                string msg = string.Format("player {0} is located at {1}", player.PlayerName, player.PlayerPosition);
+
+
+                Citrus.SelfParrot(player,msg);
+                Citrus.log.Log(msg);
+               
+
+            },
+            pluginName, "queries a player's position", "<name>(optional)", 1);
+
+            Citrus.AddCommand("kill", delegate (string[] prms, TABGPlayerServer player)
+            {
+                if (prms.Length > 1)
+                {
+                    Citrus.SelfParrot(player, "kill <name(optional)");
+                    return;
+                }
+                TABGPlayerServer find = player;
+                if (prms.Length == 1)
+                {
+
+
+                    if (!Citrus.PlayerChatSearch(prms[0], out find))
+                    {
+                        if (find != null)
+                        {
+                            Citrus.SelfParrot(player, "multiple results for: " + prms[0]);
+                        }
+                        else
+                        {
+                            Citrus.SelfParrot(player, "no results for: " + prms[0]);
+                        }
+                        return;
+                    }
+                }
+                string msg = string.Format("killing player {0}", player.PlayerName);
+
+                Citrus.KillPlayer(find);
+
+                Citrus.SelfParrot(player, msg);
+                Citrus.log.Log(msg);
+
+
+            },
+            pluginName, "kills a player. if no player is specified it kills the user...!", "<name>(optional)", 1);
+
+
             Citrus.AddCommand("start", delegate (string[] prms, TABGPlayerServer player)
              {
                  float time = 30;
@@ -694,7 +824,7 @@ namespace CitrusLib
     }
 
     //reduces multiple-recipient packages into seperate ones before trying to send to prevent package duplication
-    //... and to make my bot mod work more seamlessly
+    //... and to make my bot mod work more seamlessly once i make it
     
     [HarmonyPatch(typeof(ServerClient), nameof(ServerClient.SendMessageToClients), new Type[] { typeof(EventCode), typeof(byte[]), typeof(byte[]), typeof(bool), typeof(bool) })]
     class MessagePatch
@@ -744,105 +874,101 @@ namespace CitrusLib
         }
     }*/
 
+    
 
-    [HarmonyPatch(typeof(UnityTransportServer), "Update")]
-        class UpdatePatch
+
+    //required for kicking players properly. dont ask why.
+    [HarmonyPatch(typeof(TABGPlayerServer), nameof(TABGPlayerServer.Kill))]
+    class KillPatch
+    {
+        static void Prefix(TABGPlayerServer __instance)
         {
-            static void Prefix(ref BidirectionalDictionary<byte,NetworkConnection> ___m_playerIDToConnection, UnityTransportServer __instance, ref NativeList<NetworkConnection> ___m_connections)
+            PlayerRef pref = Citrus.players.Find(pl => pl.player == __instance);
+
+            if (pref == null)
             {
-                //apparent naitivelists are special and cannot be compared to null?
-                if (Citrus.kicklist != null & ___m_playerIDToConnection != null)
-                {
-                    while (Citrus.kicklist.Count != 0)
-                    {
-                        byte pb = Citrus.kicklist.Dequeue();
-                        NetworkConnection nc;
-                        if (!___m_playerIDToConnection.TryGetValue(pb, out nc))
-                        {
-                            Citrus.log.LogError(string.Format("Failed to find connection fo player ID: {0}", pb));
-                            continue;
-                        }
-                        //please work please work please work
-                        int j = ___m_connections.IndexOf(nc);
-                        ___m_playerIDToConnection.Remove(___m_connections[j]);
-                        Citrus.log.Log(string.Format("Client: {0} disconnected from server", ___m_connections[j].InternalId));
-                        ___m_connections[j] = default(NetworkConnection);
-                        TABGPlayerServer tabgplayerServer = Citrus.World.GameRoomReference.FindPlayer(pb);
-                        if (tabgplayerServer != null)
-                        {
-                            Citrus.World.HandlePlayerLeave(tabgplayerServer);
-                        }
-
-
-
-                    }
-                }
-                /*
-                Citrus.landLogSupressed = true;
-                Citrus.FixQueue(ref ___m_BufferedPackages);
-                int before = Citrus.queue.Count();
-                if (before > 0)
-                {
-                    foreach (UnityTransportServer.BufferedPackage p in Citrus.queue)
-                    {
-                        Citrus.World.SendMessageToClients(p.EventCode, p.Data, p.RecipentIndicies, true);
-                    }
-                    int after = Citrus.queue.Count();
-                    Citrus.queue = new List<UnityTransportServer.BufferedPackage>();
-                    Citrus.FixQueue(ref ___m_BufferedPackages);
-                    Citrus.log.Log(string.Format("Sent {0} buffered packages, {1} still remaining",(before - after),after));
-                }
-                Citrus.landLogSupressed = false;
-                UnityTransportServer.BufferedPackage bufferedPackage;
-                if (___m_BufferedPackages != null & ___m_BufferedPackages.Count > 0)
-                {
-
-                    //Citrus.World.GameRoomReference.CurrentGameSettings;
-                    int i = ___m_BufferedPackages.Count;
-
-                    int buff = i;
-
-                    while (i > 0)
-                    {
-                        i--;
-                        //might work, i've never used queues before
-
-                        bufferedPackage = ___m_BufferedPackages.Peek();
-                        //Citrus.log.Log("Buffer Package type: "+((EventCode)(bufferedPackage.EventCode)).ToString());
-
-                        //Citrus.Network.GetPipelineBuffers(Citrus.Network.pi)
-
-
-
-                        List<byte> recip = new List<byte>();
-                        foreach(byte by in bufferedPackage.RecipentIndicies)
-                        {
-                            if (Citrus.World.GameRoomReference.FindPlayer(by) != null)
-                            {
-                                recip.Add(by);
-                            }
-                        }
-                        if (recip.Count != 0)
-                        {
-                            __instance.SendMessageToClients(bufferedPackage.EventCode, bufferedPackage.Data, recip.ToArray(), true, false);
-                        }
-
-
-
-                    }
-                    Citrus.log.Log(string.Format("tried going through {0} packages, there are now {1} remaining in the queue...", buff, ___m_BufferedPackages.Count));
-
-                }*/
-
-                //return true;
-
+                Citrus.log.LogError("no playerref found for respawning player??");
+                return;
             }
 
+            pref.data["aliveAware"] = false;
+                
+            
+        }
+    }
 
-            static void Postfix(ref BidirectionalDictionary<byte, NetworkConnection> ___m_playerIDToConnection, ref NativeList<NetworkConnection> ___m_connections)
+
+    //required for kicking players properly. dont ask why.
+    [HarmonyPatch(typeof(PlayerUpdateCommand), nameof(PlayerUpdateCommand.Run))]
+    class PlayerUpdatePatch
+    {
+        static void Prefix(byte[] msgData, ServerClient world)
+        {
+            using (MemoryStream memoryStream = new MemoryStream(msgData))
             {
+                using (BinaryReader binaryReader = new BinaryReader(memoryStream))
+                {
+                    byte ind = binaryReader.ReadByte();
+
+                    PlayerRef p = Citrus.players.Find(pr => pr.player.PlayerIndex == ind);
+
+                    if(p == null)
+                    {
+                        return; //how
+                    }
+
+                    if (!p.player.IsDead)
+                    {
+                        Citrus.log.Log("setting aliveaware to true!");
+                        p.data["aliveAware"] = true;
+                    }
+                }
             }
         }
+    }
+
+    //required for kicking players properly. dont ask why.
+    [HarmonyPatch(typeof(UnityTransportServer), "Update")]
+    class UpdatePatch
+    {
+        static void Prefix(ref BidirectionalDictionary<byte,NetworkConnection> ___m_playerIDToConnection, UnityTransportServer __instance, ref NativeList<NetworkConnection> ___m_connections)
+        {
+            //apparent naitivelists are special and cannot be compared to null?
+            if (Citrus.kicklist != null & ___m_playerIDToConnection != null)
+            {
+                while (Citrus.kicklist.Count != 0)
+                {
+                    byte pb = Citrus.kicklist.Dequeue();
+                    NetworkConnection nc;
+                    if (!___m_playerIDToConnection.TryGetValue(pb, out nc))
+                    {
+                        Citrus.log.LogError(string.Format("Failed to find connection fo player ID: {0}", pb));
+                        continue;
+                    }
+                    //please work please work please work
+                    int j = ___m_connections.IndexOf(nc);
+                    ___m_playerIDToConnection.Remove(___m_connections[j]);
+                    Citrus.log.Log(string.Format("Client: {0} disconnected from server", ___m_connections[j].InternalId));
+                    ___m_connections[j] = default(NetworkConnection);
+                    TABGPlayerServer tabgplayerServer = Citrus.World.GameRoomReference.FindPlayer(pb);
+                    if (tabgplayerServer != null)
+                    {
+                        Citrus.World.HandlePlayerLeave(tabgplayerServer);
+                    }
+
+
+
+                }
+            }
+                
+
+        }
+
+
+        static void Postfix(ref BidirectionalDictionary<byte, NetworkConnection> ___m_playerIDToConnection, ref NativeList<NetworkConnection> ___m_connections)
+        {
+        }
+    }
 
         
 
