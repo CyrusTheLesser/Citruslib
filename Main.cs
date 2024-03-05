@@ -24,7 +24,7 @@ namespace CitrusLib
     {
         public const string pluginGuid = "citrusbird.tabg.citruslib";
         public const string pluginName = "Citrus Lib";
-        public const string pluginVersion = "0.4";
+        public const string pluginVersion = "0.6";
 
         public void Awake()
         {
@@ -740,6 +740,8 @@ namespace CitrusLib
                 description = "filepath to a FOLDER where you want the PlayerPerms setting to be stored. Usefull when hosting multiple servers on the same computer leave blank to edit locally."
             });
 
+            CustomLootTables.Register();
+
         }
 
 
@@ -755,6 +757,10 @@ namespace CitrusLib
             Citrus.WriteAllCommands();
             Citrus.ExtraSettings.ReadSettings();
             GuestBook.LoadGuestBook();
+
+            CustomLootTables.ReadLoot(); //reads loot tables!
+
+
 
             GameSetting supp;
             if (Citrus.ExtraSettings.TryGetSetting("Suppress Landlog", out supp))
@@ -919,7 +925,6 @@ namespace CitrusLib
 
                     if (!p.player.IsDead)
                     {
-                        Citrus.log.Log("setting aliveaware to true!");
                         p.data["aliveAware"] = true;
                     }
                 }
@@ -1121,6 +1126,33 @@ namespace CitrusLib
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(TABGLootPresetDatabase), "GetAllLootPresets")]
+    class LootTableGetPatch
+    {
+        static bool Prefix(MatchModifier[] ___m_MatchModifiers)
+        {
+            CustomLootTables.vanillaMods = ___m_MatchModifiers;
+
+
+            return true;
+        }
+    }
+
+
+    [HarmonyPatch(typeof(TABGLootPresetDatabase), nameof(TABGLootPresetDatabase.GetNewMatchModifier))]
+    class GetRandomMatchModPatch
+    {
+        static bool Prefix(ref MatchModifier __result)
+        {
+            __result = CustomLootTables.RandomMatchModifier();
+
+
+
+            return false;
+        }
+    }
+
 
     [HarmonyPatch(typeof(ChatMessageCommand), nameof(ChatMessageCommand.Run))]
     class ChatPatch

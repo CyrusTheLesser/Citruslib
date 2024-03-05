@@ -146,6 +146,7 @@ namespace CitrusLib
         public void LogError(string text)
         {
             Log(text, true);
+
         }
 
         static void ClearLastLine()

@@ -91,6 +91,7 @@
     <Compile Include="Citrus.cs" />
     <Compile Include="ChatCommands.cs" />
     <Compile Include="Citlog.cs" />
+    <Compile Include="CustomLootTables.cs" />
     <Compile Include="GameSettings.cs" />
     <Compile Include="TABGPlayer.cs" />
     <Compile Include="GuestBook.cs" />

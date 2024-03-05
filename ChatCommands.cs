@@ -86,7 +86,7 @@ namespace CitrusLib
         /// <summary>
         /// aww yeah.
         /// 
-        /// Adds a Chat command that players, which an appropriate perm level, can execut in-game.
+        /// Adds Chat commands that players, which an appropriate perm level, can execute in-game.
         /// </summary>
         /// <param name="names">an array of names that would invoke this command</param>
         /// <param name="function">An action that takes further chat parameters, and the excecuting player, as input. this is where you write what the command does!</param>
