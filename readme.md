@@ -2,12 +2,17 @@ A code library/plugin for Totally Accurate Battlegrounds Dedicated Server to mak
 
 Adds the ability to define new chat commands, create custom settings files, and adds functions for altering players in ways that wasn't present in the unmodified server.
 
-<h1>default chat commands list</h1>
+<h1>Custom Chat Commands</h1>
+Allows modders to create custom chat commands that players can execute in game.
 
 most of the commands require a PermLevel higher than 0, which is the default for players. you need to add players using their EPIC ID in the permlist file. 
 A player can find their EPIC ID EITHER:
 In the player log file, located in LocalLow/Landfall/ect/ect
 In a server's Guestbook file after connecting to a server with this plugin installed
+
+Most default commands are listed below.
+<details>
+
 
 These commands are used in-game, not in the console!
 
@@ -115,5 +120,12 @@ SETS the permission status of the player!
 Perm Level: 4
 
 `/perm-set <player>`
+</details>
 
+<h1>Custom Loot Tables</h1>
 
+Makes Customizing loot tables easier. When first launching a server with citlib, the mod creates a folder with copies of the default loot tables as JSON. You can add, remove, and otherwise edit the files to change
+
+<h1>Custom Settings</h1>
+
+Some default extra settings are included that mostly pertain to citlib or debugging. you can open the settings file to see the setting's descriptions there. Modders can also create their own settings files or add settings to the ExtraSettings file.
