@@ -2,6 +2,10 @@ A code library/plugin for Totally Accurate Battlegrounds Dedicated Server to mak
 
 Adds the ability to define new chat commands, create custom settings files, and adds functions for altering players in ways that wasn't present in the unmodified server.
 
+<h1>installation</h1>
+
+[Install Bepinex.](https://docs.bepinex.dev/articles/user_guide/installation/index.html) Then, put the latest release of citruslib in bepinex's plugin folder. launch the game once after this to get most of the config files to appear.
+
 <h1>Custom Chat Commands</h1>
 Allows modders to create custom chat commands that players can execute in game.
 
