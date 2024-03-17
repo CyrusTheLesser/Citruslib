@@ -14,7 +14,7 @@ A player can find their EPIC ID EITHER:
 In the player log file, located in LocalLow/Landfall/ect/ect
 In a server's Guestbook file after connecting to a server with this plugin installed
 
-Most default commands are listed below.
+Some default commands are listed below. A Command List is generated in the server file detailing ALL of the commands.
 <details>
 
 
