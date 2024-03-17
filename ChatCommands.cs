@@ -20,6 +20,7 @@ namespace CitrusLib
 
         static Dictionary<string, Command> commands = new Dictionary<string, Command>();
 
+        public static bool disableMissingCommandParrot = false;
 
         internal static void WriteNewPermList()
         {
@@ -272,7 +273,11 @@ namespace CitrusLib
             if (plev < permLevel)
             {
                 Citrus.log.Log(string.Format("Player {0} tried to use command {1} but isn't a high enough permission level", player.PlayerName, name));
-                Citrus.SelfParrot(player, "Command \"" + name + "\" requires a higher permission level.");
+                if (!Citrus.disableMissingCommandParrot)
+                {
+                    Citrus.SelfParrot(player, "Command \"" + name + "\" requires a higher permission level.");
+                }
+                
                 return false;
             }
 

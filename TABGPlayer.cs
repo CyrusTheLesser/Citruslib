@@ -292,7 +292,9 @@ namespace CitrusLib
 
 
         //creates a login buffer with a new teamindex for changing teams. for carefully lying to clients...
-        static byte[] LoginData(TABGPlayerServer ply, byte newGroupIndex)
+
+        //using geardatas allows altering a player's gear, relative to others only
+        static byte[] LoginData(TABGPlayerServer ply, byte newGroupIndex, int[] gearDatas=null)
         {
 
             byte[] bytes = Encoding.UTF8.GetBytes(ply.PlayerName);
@@ -305,10 +307,21 @@ namespace CitrusLib
                     binaryWriter.Write(newGroupIndex);
                     binaryWriter.Write(bytes.Length);//name length
                     binaryWriter.Write(bytes);//name bytes
-                    binaryWriter.Write(ply.GearData.Length); //gear length
-                    for (int j = 0; j < ply.GearData.Length; j++)
+                    if (gearDatas != null)
                     {
-                        binaryWriter.Write(ply.GearData[j]);//individual gear ints
+                        binaryWriter.Write(gearDatas.Length); //gear length
+                        for (int j = 0; j < gearDatas.Length; j++)
+                        {
+                            binaryWriter.Write(gearDatas[j]);//individual gear ints
+                        }
+                    }
+                    else
+                    {
+                        binaryWriter.Write(ply.GearData.Length); //gear length
+                        for (int j = 0; j < ply.GearData.Length; j++)
+                        {
+                            binaryWriter.Write(ply.GearData[j]);//individual gear ints
+                        }
                     }
                     binaryWriter.Write(false); //i forgor but i dont think it matters
                     binaryWriter.Write((int)0); //player color. unused in battleroyale
@@ -491,30 +504,55 @@ namespace CitrusLib
             Citrus.World.SendMessageToClients(EventCode.ThrowChatMessage, buffer, p.PlayerIndex, true, false);
         }
 
-        /// <summary>
-        /// NOT IMPLEMENTED
-        /// 
-        /// lets a player 'whisper' to another player
-        /// </summary>
-        /// <param name="player">The player whispering</param>
-        /// <param name="recipt">The target Player</param>
-        /// <param name="message">The message...</param>
-        public static void Whisper(TABGPlayerServer player, TABGPlayerServer recipt,string message)
-        {
-
-        }
+        
 
         /// <summary>
-        /// Not implemented yet, even though i've made the function before!
-        /// 
         /// Sets a player's gear. the client doesnt see the change, and should probably be alive during such a change.
         /// </summary>
         /// <param name="player"></param>
         /// <param name="gearData"></param>
         public static void SetGear(TABGPlayerServer player, int[] gearData)
         {
+            //if i remember correctly...
+            int ind = player.PlayerIndex;
+            //player who's gear is changing leaves game for everyone else
+            Citrus.World.SendMessageToClients(EventCode.PlayerLeft, new byte[] { player.PlayerIndex, (byte)1 }, AllExcept(ind), true);
+
+            //it's possible a delay here is needed / extremely useful, but a long delay will hide the player for longer and possibly cause deadlier bugs
+
+            //player "joins back" with new gear. teeny tiny issue where the name over their head wont be there anymore... maybe i can fix that
+            Citrus.World.SendMessageToClients(EventCode.Login, LoginData(player, player.GroupIndex, gearData), AllExcept(ind), true);
 
         }
+
+        /// <summary>
+        /// yknow how team members are meant to have their names over their heads?
+        /// changing teams and gear mid match causes issue with that.
+        /// run this code AFTER calling set team or set gear.
+        /// this is seperate from those function because you might be calling set team/gear many times and dont need redundant uses of this function.
+        /// it also only needs to be called on players who have had people *join* their team...
+        /// </summary>
+        public static void FixTeams()
+        {
+            //essentially i just need to change the gamestate to "waiting for players"
+            //and then set back to the current gamestate... which means that it cant return to the truck gamestate afaik
+            //and a couple other special states
+
+            //World.SendMessageToClients(EventCode.GameStateChanged, );
+
+            //SendGameStateChanged
+        }
+
+        /// <summary>
+        /// returns a list of all player IDs except the specified one. for use with sendmessage
+        /// </summary>
+        /// <param name="i">the index to ignore. doesnt nessesarily have to be a player who is actually connected to the server</param>
+        /// <returns></returns>
+        public static byte[] AllExcept(int i)
+        {
+            return players.Where((p) => p.player.PlayerIndex != i).ToList().ConvertAll<byte>((p) => p.player.PlayerIndex).ToArray();
+        }
+
 
     }
 

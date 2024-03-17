@@ -23,7 +23,7 @@ namespace CitrusLib
     public static partial class Citrus
     {
 
-        internal static SettingsFile<GameSetting> ExtraSettings = new SettingsFile<GameSetting>("ExtraSettings");
+        public static SettingsFile<GameSetting> ExtraSettings = new SettingsFile<GameSetting>("ExtraSettings");
 
 
 
@@ -99,13 +99,13 @@ namespace CitrusLib
         /// <param name="absolute">if true, the filepath is relative to the application's install location</param>
         public SettingsFile(string path, bool absolute = false)
         {
-            this.path = path+".txt";
+            this.path = path+".json";
 
-            string text = path + ".txt";
+            string text = path + ".json";
             if (!absolute)
             {
                 DirectoryInfo directoryInfo = new DirectoryInfo(Application.dataPath);
-                text = Path.Combine(directoryInfo.Parent.FullName, path + ".txt");
+                text = Path.Combine(directoryInfo.Parent.FullName, path + ".json");
             }
 
             path = text;
@@ -249,13 +249,17 @@ namespace CitrusLib
                 setLog.LogError(string.Format("Tried adding setting \"{0}\" but it already exists?", g.name));
                 return false;
             }
-
+            //setLog.Log(string.Format("added default setting: {0}",g.name));
             defaults.Add(g);
             return true;
         }
 
         /// <summary>
-        /// looks for a setting with name and returns true if found
+        /// looks for a setting with name and returns true if found. 
+        /// 
+        /// if a setting isnt found in the main settings, returns the default value and re-'reads' the settings file, adding ALL missing entries.
+        /// 
+        /// if a setting isnt found, returns false!
         /// </summary>
         /// <param name="name">the name of the setting</param>
         /// <param name="g">a SettingObject out parameter</param>
@@ -265,16 +269,30 @@ namespace CitrusLib
             name = name.ToLower();
             g = null;
             
-                T kvp = settings.Find(p => p.name.ToLower() == name);
-                if (kvp != null)
+            T kvp = settings.Find(p => p.name.ToLower() == name);
+            if (kvp != null)
+            {
+                g = kvp;
+                return true;
+            }
+
+            kvp = defaults.Find(p => p.name.ToLower() == name);
+            if (kvp != null)
+            {
+                ReadSettings();
+                T kvp2 = settings.Find(p => p.name.ToLower() == name);
+                if (kvp2 != null)
                 {
-                    g = kvp;
+                    //setLog.Log(string.Format("late-entry setting '{0}' was recovered", name));
+                    g = kvp2;
                     return true;
                 }
+                //setLog.Log(string.Format("late-entry setting '{0}' was NOT found, using default value", name));
+                g = kvp;
+                return true;
+            }
 
-
-            
-
+            setLog.LogError(string.Format("could not find setting {0}", name));
 
 
             return false;

@@ -24,7 +24,7 @@ namespace CitrusLib
     {
         public const string pluginGuid = "citrusbird.tabg.citruslib";
         public const string pluginName = "Citrus Lib";
-        public const string pluginVersion = "0.6";
+        public const string pluginVersion = "0.7";
 
         public void Awake()
         {
@@ -732,7 +732,14 @@ namespace CitrusLib
                 description = "Prevents most landfall debug messages from being written."
             });
 
-            
+
+            Citrus.ExtraSettings.AddSetting(new GameSetting
+            {
+                name = "Disable Missing Command Parrot",
+                value = false.ToString(),
+                description = "Disables the unknown command parrot response when tryping an unknown command"
+            });
+
             Citrus.ExtraSettings.AddSetting(new GameSetting
             {
                 name = "AdminFileLocation",
@@ -780,19 +787,33 @@ namespace CitrusLib
             GameSetting adminLoc;
             if (Citrus.ExtraSettings.TryGetSetting("AdminFileLocation", out adminLoc))
             {
+                string p = "";
                 if (adminLoc.value != "")
                 {
                     Citrus.log.Log("Loading player perms at " + adminLoc.value);
+                    p = adminLoc.value + "/PlayerPerms";
                 }
-                Citrus.LoadPermSettings(adminLoc.value + "/PlayerPerms");
+                Citrus.LoadPermSettings(p);
             }
 
+            //bool dis = false;
+            GameSetting disCom = null;
+            if (Citrus.ExtraSettings.TryGetSetting("Disable Missing Command Parrot", out disCom))
+            {
+                bool sup = false;
+                if (Boolean.TryParse(disCom.value, out sup))
+                {
+                    Citrus.disableMissingCommandParrot = sup;
+                }
+            }
         }
 
     }
 
 
-        //grabs the Network object when the game is hosted
+    
+
+    //grabs the Network object when the game is hosted
     [HarmonyPatch(typeof(UnityTransportServer), "ActuallyHost")]
     class HostPatch
     {
